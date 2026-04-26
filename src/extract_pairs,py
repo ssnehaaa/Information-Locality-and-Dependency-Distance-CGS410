@@ -1,0 +1,85 @@
+"""
+extract_pairs.py
+================
+Extract head-dependent word pairs and compute dependency distance
+from parsed SUD sentences.
+
+Dependency Distance (DD):
+    DD(h, d) = |position(head) - position(dependent)|
+    A DD of 1 means the two words are adjacent.
+
+Filters applied:
+    - Root arcs (head == 0) are excluded
+    - Multi-word tokens are excluded
+    - Non-alphabetic forms (punctuation, numbers) are excluded
+    - Empty token nodes are excluded
+
+Usage:
+    from src.extract_pairs import extract_pairs
+"""
+
+
+def extract_pairs(sentences: list) -> list[tuple]:
+    """
+    Extract (head_word, dependent_word, dependency_distance) from
+    all sentences in a language corpus.
+
+    Parameters
+    ----------
+    sentences : list of conllu.TokenList
+        Parsed sentences from load_corpus.load_sentences()
+
+    Returns
+    -------
+    list of (str, str, int)
+        Each tuple is (head_form, dep_form, dependency_distance)
+    """
+    pairs = []
+
+    for sent in sentences:
+        # Build a lookup dict: token_id -> token dict
+        # Only keep tokens with integer IDs (excludes multi-word tokens)
+        tokens = {
+            tok["id"]: tok
+            for tok in sent
+            if isinstance(tok["id"], int)
+        }
+
+        for tok in sent:
+            # Skip multi-word tokens (id is a tuple like (1, 2))
+            if not isinstance(tok["id"], int):
+                continue
+
+            head_id = tok["head"]
+
+            # Skip root arc
+            if head_id is None or head_id == 0:
+                continue
+
+            # Skip if head token not found (malformed arc)
+            if head_id not in tokens:
+                continue
+
+            head_word = tokens[head_id]["form"].lower().strip()
+            dep_word  = tok["form"].lower().strip()
+
+            # Skip punctuation, numbers, symbols
+            if not head_word.isalpha() or not dep_word.isalpha():
+                continue
+
+            # Dependency Distance = absolute positional difference
+            dd = abs(tok["id"] - head_id)
+
+            pairs.append((head_word, dep_word, dd))
+
+    print(f"  [extract] {len(pairs):,} head-dependent pairs extracted")
+    return pairs
+
+
+if __name__ == "__main__":
+    from load_corpus import load_sentences, LANGUAGE_FILES
+    sents = load_sentences(LANGUAGE_FILES["English"])
+    pairs = extract_pairs(sents)
+    print(f"\nSample pairs:")
+    for p in pairs[:5]:
+        print(f"  head='{p[0]}', dep='{p[1]}', DD={p[2]}")

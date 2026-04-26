@@ -131,6 +131,29 @@ python src/visualize.py
 - Levy (2008). Expectation-based syntactic comprehension. *Cognition*.
 - Liu (2008). Dependency distance as a metric of language comprehension difficulty. *Journal of Cognitive Science*.
 
+## Additional Analysis
+
+### Mean DD Reduction: Low PMI vs High PMI Pairs
+
+| Language | Typology | Mean DD (Low PMI) | Mean DD (High PMI) | % Reduction |
+|----------|----------|-------------------|-------------------|-------------|
+| Hindi    | SOV      | 4.555             | 1.596             | **65.0%**   |
+| Japanese | SOV      | 3.317             | 1.393             | **58.0%**   |
+| Persian  | SOV      | 4.684             | 2.426             | **48.2%**   |
+| Chinese  | SVO      | 3.918             | 2.316             | **40.9%**   |
+| French   | SVO      | 2.468             | 1.499             | **39.3%**   |
+| Russian  | Mixed    | 2.458             | 1.537             | **37.5%**   |
+| English  | SVO      | 2.479             | 1.625             | **34.4%**   |
+| German   | Mixed    | 3.297             | 2.873             | **12.9%**   |
+| Turkish  | SOV      | 1.211             | 1.172             | **3.3%**    |
+
+> High-PMI pairs show dramatically shorter dependency distances across all languages.
+> Hindi shows the strongest effect — high-MI pairs are placed **65% closer** than low-MI pairs.
+
+### Figures
+
+![Correlation by Language](results/correlation_by_language.png)
+![DD by PMI Quartile](results/dd_by_pmi_quartile.png)
 ---
 
 *Course project for CGS410, IIT Kanpur, April 2026.*
